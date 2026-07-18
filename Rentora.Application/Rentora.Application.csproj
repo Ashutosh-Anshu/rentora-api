@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Authentication\Commands\ChangePassword\" />
+    <Folder Include="Authentication\Commands\ForgotPassword\" />
+    <Folder Include="Authentication\Commands\Logout\" />
+    <Folder Include="Authentication\Commands\RefreshToken\" />
+    <Folder Include="Authentication\Commands\ResetPassword\" />
+    <Folder Include="Authentication\Queries\" />
+    <Folder Include="Common\Shared\Constants\" />
+    <Folder Include="Common\Shared\Helpers\" />
+    <Folder Include="Common\Shared\Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rentora.Domain\Rentora.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

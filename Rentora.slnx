@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Rentora.Api/Rentora.Api.csproj" />
+    <Project Path="Rentora.Application/Rentora.Application.csproj" />
+    <Project Path="Rentora.Domain/Rentora.Domain.csproj" />
+    <Project Path="Rentora.Infrastructure/Rentora.Infrastructure.csproj" Id="f1e8193b-167c-448c-a068-84d622eebfde" />
+  </Folder>
+</Solution>
