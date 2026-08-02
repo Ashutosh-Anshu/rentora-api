@@ -6,6 +6,7 @@ using Rentora.Application.Common.Interfaces;
 using Rentora.Application.Common.Shared.Models;
 using Rentora.Application.Common.Shared.Responses;
 using Rentora.Domain.Entities.Authentication;
+using System.Diagnostics;
 
 
 namespace Rentora.Infrastructure.Identity
@@ -114,7 +115,6 @@ namespace Rentora.Infrastructure.Identity
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginCommand request, CancellationToken ct)
         {
-            // Find user by email
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user is null)

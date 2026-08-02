@@ -11,6 +11,5 @@ namespace Rentora.Domain.Entities.Authentication
         public bool IsSystem { get; set; }
 
         public ICollection<RolePermission> RolePermissions { get; set; } = [];
-
     }
 }

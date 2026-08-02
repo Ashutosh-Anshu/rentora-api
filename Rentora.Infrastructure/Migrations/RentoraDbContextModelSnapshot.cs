@@ -125,7 +125,47 @@ namespace Rentora.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.ApplicationRole", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ActionPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ActionPermissionId");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("MenuId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ActionPermissions", (string)null);
+                });
+
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -150,12 +190,12 @@ namespace Rentora.Infrastructure.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -167,7 +207,7 @@ namespace Rentora.Infrastructure.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.ApplicationUser", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,7 +268,8 @@ namespace Rentora.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -264,16 +305,17 @@ namespace Rentora.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.Menu", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.Menu", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("MenuId");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("CreatedBy")
+                    b.Property<Guid?>("CreatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DisplayName")
@@ -282,8 +324,8 @@ namespace Rentora.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -299,96 +341,51 @@ namespace Rentora.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("OrderNum")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Route")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid?>("UpdatedById")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("OrderNum");
 
                     b.HasIndex("ParentId");
 
                     b.ToTable("Menus", (string)null);
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.MenuPermission", b =>
-                {
-                    b.Property<Guid>("MenuId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MenuId", "PermissionId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.ToTable("MenuPermissions", (string)null);
-                });
-
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.Permission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Permissions", (string)null);
-                });
-
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.RolePermission", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.RolePermission", b =>
                 {
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PermissionId")
+                    b.Property<Guid>("ActionPermissionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("RoleId", "PermissionId");
+                    b.HasKey("RoleId", "ActionPermissionId");
 
-                    b.HasIndex("PermissionId");
+                    b.HasIndex("ActionPermissionId");
 
                     b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationRole", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -397,7 +394,7 @@ namespace Rentora.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationUser", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -406,7 +403,7 @@ namespace Rentora.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationUser", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -415,13 +412,13 @@ namespace Rentora.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationRole", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationUser", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -430,16 +427,27 @@ namespace Rentora.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationUser", null)
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.Menu", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ActionPermission", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.Menu", "Parent")
+                    b.HasOne("Rentora.Domain.Entities.Authentication.Menu", "Menu")
+                        .WithMany("Actions")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.Menu", b =>
+                {
+                    b.HasOne("Rentora.Domain.Entities.Authentication.Menu", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -447,61 +455,40 @@ namespace Rentora.Infrastructure.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.MenuPermission", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.RolePermission", b =>
                 {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.Menu", "Menu")
-                        .WithMany("MenuPermissions")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Rentora.Domain.Entities.Authorization.Permission", "Permission")
-                        .WithMany("MenuPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Menu");
-
-                    b.Navigation("Permission");
-                });
-
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.RolePermission", b =>
-                {
-                    b.HasOne("Rentora.Domain.Entities.Authorization.Permission", "Permission")
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ActionPermission", "ActionPermission")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId")
+                        .HasForeignKey("ActionPermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Rentora.Domain.Entities.Authorization.ApplicationRole", "Role")
+                    b.HasOne("Rentora.Domain.Entities.Authentication.ApplicationRole", "Role")
                         .WithMany("RolePermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Permission");
+                    b.Navigation("ActionPermission");
 
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.ApplicationRole", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ActionPermission", b =>
                 {
                     b.Navigation("RolePermissions");
                 });
 
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.Menu", b =>
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.ApplicationRole", b =>
                 {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Rentora.Domain.Entities.Authentication.Menu", b =>
+                {
+                    b.Navigation("Actions");
+
                     b.Navigation("Children");
-
-                    b.Navigation("MenuPermissions");
-                });
-
-            modelBuilder.Entity("Rentora.Domain.Entities.Authorization.Permission", b =>
-                {
-                    b.Navigation("MenuPermissions");
-
-                    b.Navigation("RolePermissions");
                 });
 #pragma warning restore 612, 618
         }

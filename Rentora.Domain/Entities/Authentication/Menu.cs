@@ -22,6 +22,6 @@ namespace Rentora.Domain.Entities.Authentication
 
         public ICollection<Menu> Children { get; set; } = [];
 
-        public ICollection<MenuPermission> MenuPermissions { get; set; } = [];
+        public ICollection<ActionPermission> ActionPermissions { get; set; } = [];
     }
 }

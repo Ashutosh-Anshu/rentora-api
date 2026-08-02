@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Rentora.Application;
 using Rentora.Infrastructure;
+using Rentora.Infrastructure.Persistence.Context;
 using Rentora.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,10 +34,16 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+
+//    var context = services.GetRequiredService<RentoraDbContext>();
+
+//    await context.Database.MigrateAsync();
+
+//    await DatabaseSeeder.SeedAsync(services);
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

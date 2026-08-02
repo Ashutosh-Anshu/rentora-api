@@ -2,8 +2,10 @@
 
 namespace Rentora.Domain.Entities.Authentication
 {
-    public class Permission : BaseEntity
+    public class ActionPermission : BaseEntity
     {
+        public Guid MenuId { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
         public string Code { get; set; } = string.Empty;
@@ -12,7 +14,7 @@ namespace Rentora.Domain.Entities.Authentication
 
         public bool IsActive { get; set; } = true;
 
-        public ICollection<MenuPermission> MenuPermissions { get; set; } = [];
+        public Menu Menu { get; set; } = default!;
 
         public ICollection<RolePermission> RolePermissions { get; set; } = [];
     }

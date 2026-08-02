@@ -26,14 +26,18 @@ namespace Rentora.Infrastructure.Identity.Jwt
 
 
             var claims = new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new(ClaimTypes.Name, user.FullName),
-                new(ClaimTypes.Email, user.Email),
-                new("RoleId", user.RoleId.ToString()),
-            };
+                {
+                    new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                    new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                
+                    new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                    new(ClaimTypes.Name, user.FullName),
+                    new(ClaimTypes.Email, user.Email),
+                
+                    new(ClaimTypes.Role, user.RoleName),
+                
+                    new("RoleId", user.RoleId.ToString())
+                };
 
 
             var credentials = new SigningCredentials(

@@ -5,30 +5,28 @@ using Rentora.Domain.Entities.Authentication;
 
 namespace Rentora.Infrastructure.Persistence.Configurations.Authentication
 {
-    public class MenuConfiguration : IEntityTypeConfiguration<Menu>
+    public sealed class MenuConfiguration : IEntityTypeConfiguration<Menu>
     {
         public void Configure(EntityTypeBuilder<Menu> builder)
         {
             builder.ToTable("Menus");
 
-            builder.HasKey(x => x.Id);
+            builder.Property(x =>x.Id)
+                .HasColumnName("MenuId");
 
             builder.Property(x => x.Name)
-                .HasMaxLength(EntityLength.Name)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(EntityLength.Name);
 
             builder.Property(x => x.DisplayName)
-                .HasMaxLength(EntityLength.Name)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(EntityLength.DisplayName);
 
             builder.Property(x => x.Route)
-                .HasMaxLength(250);
+                .HasMaxLength(EntityLength.Route);
 
             builder.Property(x => x.Icon)
-                .HasMaxLength(100);
-
-            builder.Property(x => x.OrderNum)
-                .HasDefaultValue(0);
+                .HasMaxLength(EntityLength.Icon);
 
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
@@ -37,6 +35,16 @@ namespace Rentora.Infrastructure.Persistence.Configurations.Authentication
                 .WithMany(x => x.Children)
                 .HasForeignKey(x => x.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.ActionPermissions)
+                .WithOne(x => x.Menu)
+                .HasForeignKey(x => x.MenuId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(x => x.Name)
+                .IsUnique();
+
+            builder.HasIndex(x => x.OrderNum);
         }
     }
 }
