@@ -6,8 +6,6 @@ using Rentora.Application.Common.Shared.Responses;
 
 namespace Rentora.Api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
     public sealed class AuthenticationController(IMediator _mediator) : BaseApiController
     {
         [HttpPost("register")]
@@ -21,5 +19,6 @@ namespace Rentora.Api.Controllers
         {
             return await _mediator.Send(command);
         }
+
     }
 }

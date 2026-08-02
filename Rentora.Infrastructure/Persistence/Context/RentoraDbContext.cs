@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Rentora.Application.Common.Interfaces;
 using Rentora.Domain.Entities.Authentication;
 
 namespace Rentora.Infrastructure.Persistence.Context
 {
-    public class RentoraDbContext: IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class RentoraDbContext
+        : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, 
+        IApplicationDbContext
     {
         public RentoraDbContext(DbContextOptions<RentoraDbContext> options)
             : base(options)
@@ -19,8 +22,7 @@ namespace Rentora.Infrastructure.Persistence.Context
         }
 
         public DbSet<Menu> Menus => Set<Menu>();
-        public DbSet<Permission> Permissions => Set<Permission>();
-        public DbSet<MenuPermission> MenuPermissions => Set<MenuPermission>();
+        public DbSet<ActionPermission> ActionPermissions => Set<ActionPermission>();
         public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     }
 }

@@ -13,7 +13,6 @@
     <Folder Include="Authentication\Commands\RefreshToken\" />
     <Folder Include="Authentication\Commands\ResetPassword\" />
     <Folder Include="Authentication\Queries\" />
-    <Folder Include="Common\Shared\Constants\" />
     <Folder Include="Common\Shared\Helpers\" />
     <Folder Include="Common\Shared\Extensions\" />
   </ItemGroup>

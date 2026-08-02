@@ -19,8 +19,8 @@ namespace Rentora.Infrastructure.Migrations
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsSystem = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -48,7 +48,7 @@ namespace Rentora.Infrastructure.Migrations
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -64,44 +64,29 @@ namespace Rentora.Infrastructure.Migrations
                 name: "Menus",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Route = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    OrderNum = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Route = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Icon = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    OrderNum = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.PrimaryKey("PK_Menus", x => x.MenuId);
                     table.ForeignKey(
                         name: "FK_Menus_Menus_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Menus",
-                        principalColumn: "Id",
+                        principalColumn: "MenuId",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Permissions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Permissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,26 +196,24 @@ namespace Rentora.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MenuPermissions",
+                name: "ActionPermissions",
                 columns: table => new
                 {
+                    ActionPermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenuPermissions", x => new { x.MenuId, x.PermissionId });
+                    table.PrimaryKey("PK_ActionPermissions", x => x.ActionPermissionId);
                     table.ForeignKey(
-                        name: "FK_MenuPermissions_Menus_MenuId",
+                        name: "FK_ActionPermissions_Menus_MenuId",
                         column: x => x.MenuId,
                         principalTable: "Menus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MenuPermissions_Permissions_PermissionId",
-                        column: x => x.PermissionId,
-                        principalTable: "Permissions",
-                        principalColumn: "Id",
+                        principalColumn: "MenuId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -239,24 +222,36 @@ namespace Rentora.Infrastructure.Migrations
                 columns: table => new
                 {
                     RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ActionPermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RolePermissions", x => new { x.RoleId, x.PermissionId });
+                    table.PrimaryKey("PK_RolePermissions", x => new { x.RoleId, x.ActionPermissionId });
+                    table.ForeignKey(
+                        name: "FK_RolePermissions_ActionPermissions_ActionPermissionId",
+                        column: x => x.ActionPermissionId,
+                        principalTable: "ActionPermissions",
+                        principalColumn: "ActionPermissionId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RolePermissions_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RolePermissions_Permissions_PermissionId",
-                        column: x => x.PermissionId,
-                        principalTable: "Permissions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPermissions_Code",
+                table: "ActionPermissions",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActionPermissions_MenuId_Name",
+                table: "ActionPermissions",
+                columns: new[] { "MenuId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -298,9 +293,15 @@ namespace Rentora.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MenuPermissions_PermissionId",
-                table: "MenuPermissions",
-                column: "PermissionId");
+                name: "IX_Menus_Name",
+                table: "Menus",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Menus_OrderNum",
+                table: "Menus",
+                column: "OrderNum");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Menus_ParentId",
@@ -308,15 +309,9 @@ namespace Rentora.Infrastructure.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permissions_Code",
-                table: "Permissions",
-                column: "Code",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RolePermissions_PermissionId",
+                name: "IX_RolePermissions_ActionPermissionId",
                 table: "RolePermissions",
-                column: "PermissionId");
+                column: "ActionPermissionId");
         }
 
         /// <inheritdoc />
@@ -338,22 +333,19 @@ namespace Rentora.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "MenuPermissions");
-
-            migrationBuilder.DropTable(
                 name: "RolePermissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Menus");
+                name: "ActionPermissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Permissions");
+                name: "Menus");
         }
     }
 }

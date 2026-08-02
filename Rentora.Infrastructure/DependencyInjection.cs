@@ -96,19 +96,11 @@ namespace Rentora.Infrastructure
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-
                     ValidateAudience = true,
-
                     ValidateLifetime = true,
-
                     ValidateIssuerSigningKey = true,
-
-
                     ValidIssuer = jwtSettings!.Issuer,
-
                     ValidAudience = jwtSettings.Audience,
-
-
                     IssuerSigningKey =
                         new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(
@@ -116,10 +108,7 @@ namespace Rentora.Infrastructure
                 };
             });
 
-
             services.AddScoped<IJwtService, JwtService>();
-
-
             return services;
         }
 
@@ -133,6 +122,9 @@ namespace Rentora.Infrastructure
         private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             // Implementation
+            services.AddHttpContextAccessor();
+            services.AddScoped<IApplicationDbContext, RentoraDbContext>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
 
             return services;
