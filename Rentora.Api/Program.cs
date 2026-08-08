@@ -1,8 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Rentora.Application;
 using Rentora.Infrastructure;
-using Rentora.Infrastructure.Persistence.Context;
-using Rentora.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 

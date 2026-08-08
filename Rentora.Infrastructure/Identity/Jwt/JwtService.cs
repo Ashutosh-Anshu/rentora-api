@@ -20,10 +20,13 @@ namespace Rentora.Infrastructure.Identity.Jwt
 
         public async Task<string> GenerateAccessTokenAsync(UserInfo user)
         {
-            var key = Encoding.UTF8.GetBytes(
-                _configuration["Jwt:SecretKey"]
-                ?? throw new Exception("JWT Key missing"));
+            var secretKey = _configuration["Jwt:SecretKey"];
 
+            if (string.IsNullOrWhiteSpace(secretKey))
+            {
+                throw new InvalidOperationException("JWT SecretKey is not configured.");
+            }
+            var key = Encoding.UTF8.GetBytes(secretKey);
 
             var claims = new List<Claim>
                 {
