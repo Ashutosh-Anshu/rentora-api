@@ -11,7 +11,7 @@ namespace Rentora.Infrastructure.Persistence.Seed
         public static async Task SeedAsync(IServiceProvider services)
         {
             var context = services.GetRequiredService<RentoraDbContext>();
-            await context.Database.ExecuteSqlRawAsync("EXEC dbo.SeedSystemData");
+            //await context.Database.ExecuteSqlRawAsync("EXEC dbo.SeedSystemData");
         }
     }
 }

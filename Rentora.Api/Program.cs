@@ -20,7 +20,8 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:4200"
+                "http://localhost:4200",
+                "https://rentora-web.vercel.app"
             // Add your production Angular URL here
             )
             .AllowAnyHeader()
