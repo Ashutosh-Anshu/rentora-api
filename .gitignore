@@ -23,6 +23,7 @@ packages/
 secrets.json
 
 appsettings.Development.json
+appsettings.Production.json
 launchSettings.json
 
 *.mdf
