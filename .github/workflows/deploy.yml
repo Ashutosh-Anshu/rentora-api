@@ -16,7 +16,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Build and Publish
-        run: dotnet publish ./src/YourApi/YourApi.csproj -c Release -o ./publish
+        run: dotnet publish ./Rentora.Api/Rentora.Api.csproj -c Release -o ./publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
