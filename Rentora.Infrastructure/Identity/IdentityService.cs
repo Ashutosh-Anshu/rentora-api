@@ -38,9 +38,7 @@ namespace Rentora.Infrastructure.Identity
             if (emailExists)
             {
                 return Result<RegisterResponse>.Fail(
-                [
-                    new Error("Email", "Email already exists.")
-                ]);
+                    "Email already exists.");
             }
 
             // Check Phone
@@ -50,9 +48,7 @@ namespace Rentora.Infrastructure.Identity
             if (phoneExists)
             {
                 return Result<RegisterResponse>.Fail(
-                [
-                    new Error("PhoneNumber", "Phone number already exists.")
-                ]);
+                    "Phone number already exists.");
             }
 
             // Check Role
@@ -61,9 +57,8 @@ namespace Rentora.Infrastructure.Identity
             if (role is null)
             {
                 return Result<RegisterResponse>.Fail(
-                [
-                    new Error("Role", "Selected role does not exist.")
-                ]);
+                    "Selected role does not exist.");
+
             }
 
             var user = new ApplicationUser
@@ -85,7 +80,7 @@ namespace Rentora.Infrastructure.Identity
             {
                 return Result<RegisterResponse>.Fail(
                     result.Errors.Select(x =>
-                        new Error(x.Code, x.Description)));
+                        new Error(x.Description)));
             }
 
             var roleResult = await _userManager.AddToRoleAsync(
@@ -96,7 +91,7 @@ namespace Rentora.Infrastructure.Identity
             {
                 return Result<RegisterResponse>.Fail(
                     roleResult.Errors.Select(x =>
-                        new Error(x.Code, x.Description)));
+                        new Error(x.Description)));
             }
 
             var response = new RegisterResponse
@@ -120,27 +115,21 @@ namespace Rentora.Infrastructure.Identity
             if (user is null)
             {
                 return Result<LoginResponse>.Fail(
-                [
-                    new Error("Email", "Invalid email or password.")
-                ]);
+                    "Invalid email or password.");
             }
 
             // Check if user is active
             if (!user.IsActive)
             {
                 return Result<LoginResponse>.Fail(
-                [
-                    new Error("Account", "Your account has been deactivated.")
-                ]);
+                    "Your account has been deactivated.");
             }
 
             // Check if deleted
             if (user.IsDeleted)
             {
                 return Result<LoginResponse>.Fail(
-                [
-                    new Error("Account", "Account does not exist.")
-                ]);
+                    "Account does not exist.");
             }
 
             // Verify password
@@ -152,9 +141,7 @@ namespace Rentora.Infrastructure.Identity
             if (!result.Succeeded)
             {
                 return Result<LoginResponse>.Fail(
-                [
-                    new Error("Password", "Invalid email or password.")
-                ]);
+                    "Invalid email or password.");
             }
 
             // Get user role

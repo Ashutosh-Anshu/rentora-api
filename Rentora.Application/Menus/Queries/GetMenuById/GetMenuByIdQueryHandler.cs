@@ -37,17 +37,13 @@ namespace Rentora.Application.Menus.Queries.GetMenuById
             if (user is null)
             {
                 return Result<List<GetMenuByIdResponse>>.Fail(
-                [
-                    new Error("User", "User not found.")
-                ]);
+                    "User not found.");
             }
 
             if (!user.IsActive)
             {
                 return Result<List<GetMenuByIdResponse>>.Fail(
-                [
-                    new Error("User", "User is inactive.")
-                ]);
+                    "User is inactive.");
             }
 
             // Get user roles

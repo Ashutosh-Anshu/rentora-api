@@ -15,10 +15,7 @@ namespace Rentora.Application.Users.Queries.GetUserById
             if (user is null)
             {
                 return Result<GetUserByIdResponse>.Fail(
-                    new List<Error>
-                    {
-                        new Error("User", "User not found.")
-                    });
+                    "User not found.");
             }
             var userInfo = new GetUserByIdResponse
             {

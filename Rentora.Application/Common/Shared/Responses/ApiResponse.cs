@@ -8,11 +8,14 @@
 
         public T? Data { get; init; }
 
-        public IEnumerable<Error>? Errors { get; init; }
+        public IEnumerable<Error> Errors { get; init; } = [];
 
-        public static Result<T> Ok(T data, string message = "Success")
+        // Success
+        public static Result<T> Ok(
+            T data,
+            string message = "Success")
         {
-            return new()
+            return new Result<T>
             {
                 Success = true,
                 Message = message,
@@ -20,9 +23,28 @@
             };
         }
 
-        public static Result<T> Fail(IEnumerable<Error> errors, string message = "Failed")
+        // Single error
+        public static Result<T> Fail(
+            string errorMessage,
+            string message = "Failed")
         {
-            return new()
+            return new Result<T>
+            {
+                Success = false,
+                Message = message,
+                Errors =
+                [
+                    new Error(errorMessage)
+                ]
+            };
+        }
+
+        // Multiple errors
+        public static Result<T> Fail(
+            IEnumerable<Error> errors,
+            string message = "Failed")
+        {
+            return new Result<T>
             {
                 Success = false,
                 Message = message,
