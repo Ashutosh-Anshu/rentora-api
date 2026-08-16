@@ -6,7 +6,6 @@ using Rentora.Application.Common.Interfaces;
 using Rentora.Application.Common.Shared.Models;
 using Rentora.Application.Common.Shared.Responses;
 using Rentora.Domain.Entities.Authentication;
-using System.Diagnostics;
 
 
 namespace Rentora.Infrastructure.Identity
@@ -29,57 +28,73 @@ namespace Rentora.Infrastructure.Identity
             _signInManager = signInManager;
             _jwtService = jwtService;
         }
-        public async Task<Result<RegisterResponse>> RegisterAsync( RegisterCommand request, CancellationToken ct)
+
+        public async Task<Result<RegisterResponse>> RegisterAsync(RegisterCommand request,CancellationToken ct)
         {
-            // Check Email
-            var emailExists = await _userManager.Users
-                .AnyAsync(x => x.Email == request.Email, ct);
-
-            if (emailExists)
-            {
-                return Result<RegisterResponse>.Fail(
-                    "Email already exists.");
-            }
-
-            // Check Phone
-            var phoneExists = await _userManager.Users
-                .AnyAsync(x => x.PhoneNumber == request.PhoneNumber, ct);
-
-            if (phoneExists)
-            {
-                return Result<RegisterResponse>.Fail(
-                    "Phone number already exists.");
-            }
-
-            // Check Role
-            var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
+            var role = await _roleManager.FindByIdAsync(
+                request.RoleId.ToString());
 
             if (role is null)
             {
                 return Result<RegisterResponse>.Fail(
-                    "Selected role does not exist.");
+                    "Role does not exist.");
+            }
 
+            if (!role.IsActive)
+            {
+                return Result<RegisterResponse>.Fail(
+                    "Role is inactive.");
+            }
+
+            var usersWithEmail = await _userManager.Users
+                .Where(x => x.Email == request.Email)
+                .ToListAsync(ct);
+
+            foreach (var existingUser in usersWithEmail)
+            {
+                var existingRoles = await _userManager.GetRolesAsync(existingUser);
+
+                if (existingRoles.Contains(role.Name!))
+                {
+                    return Result<RegisterResponse>.Fail(
+                        $"Email is already registered as {role.Name}.");
+                }
+            }
+
+            var usersWithPhone = await _userManager.Users
+                .Where(x => x.PhoneNumber == request.PhoneNumber)
+                .ToListAsync(ct);
+
+            foreach (var existingUser in usersWithPhone)
+            {
+                var existingRoles = await _userManager.GetRolesAsync(existingUser);
+
+                if (existingRoles.Contains(role.Name!))
+                {
+                    return Result<RegisterResponse>.Fail(
+                        $"Phone number is already registered as {role.Name}.");
+                }
             }
 
             var user = new ApplicationUser
             {
                 Id = Guid.NewGuid(),
-                UserName = request.Email,
+                UserName = $"{request.Email}_{Guid.NewGuid():N}",
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 FullName = request.FullName,
                 EmailConfirmed = true,
-                TermsAccepted = true,
+                TermsAccepted = request.TermsAccepted,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
 
-            var result = await _userManager.CreateAsync(user,request.Password);
+            var createResult = await _userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded)
+            if (!createResult.Succeeded)
             {
                 return Result<RegisterResponse>.Fail(
-                    result.Errors.Select(x =>
+                    createResult.Errors.Select(x =>
                         new Error(x.Description)));
             }
 
@@ -89,6 +104,8 @@ namespace Rentora.Infrastructure.Identity
 
             if (!roleResult.Succeeded)
             {
+                await _userManager.DeleteAsync(user);
+
                 return Result<RegisterResponse>.Fail(
                     roleResult.Errors.Select(x =>
                         new Error(x.Description)));
@@ -110,59 +127,91 @@ namespace Rentora.Infrastructure.Identity
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginCommand request, CancellationToken ct)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user is null)
+            var role = await _roleManager.FindByIdAsync(request.RoleId.ToString());
+
+            if (role is null)
+            {
+                return Result<LoginResponse>.Fail(
+                    "Selected role does not exist.");
+            }
+
+            if (!role.IsActive)
+            {
+                return Result<LoginResponse>.Fail(
+                    "Selected role is inactive.");
+            }
+
+            var normalizedEmail = _userManager.NormalizeEmail(request.Email);
+
+            var users = await _userManager.Users
+                .Where(x => x.NormalizedEmail == normalizedEmail)
+                .ToListAsync(ct);
+
+            if (users.Count == 0)
             {
                 return Result<LoginResponse>.Fail(
                     "Invalid email or password.");
             }
 
-            // Check if user is active
+            ApplicationUser? user = null;
+
+            foreach (var existingUser in users)
+            {
+                var roles = await _userManager.GetRolesAsync(
+                    existingUser);
+
+                if (roles.Contains(
+                        role.Name!,
+                        StringComparer.OrdinalIgnoreCase))
+                {
+                    user = existingUser;
+                    break;
+                }
+            }
+
+            if (user is null)
+            {
+                return Result<LoginResponse>.Fail(
+                    "Invalid email, password or role.");
+            }
+
             if (!user.IsActive)
             {
                 return Result<LoginResponse>.Fail(
                     "Your account has been deactivated.");
             }
 
-            // Check if deleted
             if (user.IsDeleted)
             {
                 return Result<LoginResponse>.Fail(
                     "Account does not exist.");
             }
 
-            // Verify password
-            var result = await _signInManager.CheckPasswordSignInAsync(
-                user,
-                request.Password,
-                lockoutOnFailure: true);
+            var passwordResult =
+                await _signInManager.CheckPasswordSignInAsync(
+                    user,
+                    request.Password,
+                    lockoutOnFailure: true);
 
-            if (!result.Succeeded)
+            if (!passwordResult.Succeeded)
             {
                 return Result<LoginResponse>.Fail(
                     "Invalid email or password.");
             }
 
-            // Get user role
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var roleName = roles.FirstOrDefault() ?? string.Empty;
-
-            var role = await _roleManager.FindByNameAsync(roleName);
-
             var userInfo = new UserInfo
             {
                 UserId = user.Id,
-                RoleId = role?.Id ?? Guid.Empty,
-                RoleName = roleName,
+                RoleId = role.Id,
+                RoleName = role.Name!,
                 FullName = user.FullName,
                 Email = user.Email!,
                 PhoneNumber = user.PhoneNumber!
             };
 
-            // TODO: JWT Generation
             var accessToken = await _jwtService.GenerateAccessTokenAsync(userInfo);
+
             var refreshToken = await _jwtService.GenerateRefreshTokenAsync(user.Id, null);
 
             var response = new LoginResponse
@@ -170,23 +219,13 @@ namespace Rentora.Infrastructure.Identity
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
                 ExpiresAt = DateTime.UtcNow,
-
-                User = new UserInfo
-                {
-                    UserId = user.Id,
-                    RoleId = role?.Id ?? Guid.Empty,
-                    RoleName = roleName,
-                    FullName = user.FullName,
-                    Email = user.Email!,
-                    PhoneNumber = user.PhoneNumber!
-                }
+                User = userInfo
             };
 
             return Result<LoginResponse>.Ok(
                 response,
                 "Login successful.");
         }
-
 
 
 

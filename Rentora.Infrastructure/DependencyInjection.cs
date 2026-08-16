@@ -52,7 +52,7 @@ namespace Rentora.Infrastructure
                 options.Password.RequiredUniqueChars = 1;
 
                 // User
-                options.User.RequireUniqueEmail = true;
+                options.User.RequireUniqueEmail = false;
 
                 // SignIn
                 options.SignIn.RequireConfirmedEmail = false;
