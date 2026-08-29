@@ -44,11 +44,11 @@ var app = builder.Build();
 //}
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+if (app.Environment.IsDevelopment())
+{
     app.UseSwagger();
     app.UseSwaggerUI();
-//}
+}
 
 app.UseHttpsRedirection();
 
@@ -58,6 +58,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/", () => Results.Ok(new
+{
+    message = "Rentora API is running"
+}));
 
 app.MapGet("/health", () => Results.Ok(new
 {

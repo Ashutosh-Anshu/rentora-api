@@ -31,9 +31,6 @@ namespace Rentora.Infrastructure.Persistence.Configurations.Authentication
             builder.Property(x => x.IsDeleted)
                 .HasDefaultValue(false);
 
-            builder.Property(x => x.TermsAccepted)
-                .HasDefaultValue(false);
-
             builder.Property(x => x.CreatedAt)
                 .IsRequired();
         }

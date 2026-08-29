@@ -4,8 +4,7 @@ using Rentora.Application.Common.Shared.Responses;
 
 namespace Rentora.Application.Authentication.Commands.Register
 {
-    public sealed class RegisterCommandHandler
-    : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
+    public sealed class RegisterCommandHandler: IRequestHandler<RegisterCommand, Result<RegisterResponse>>
     {
         private readonly IIdentityService _identityService;
 
@@ -14,11 +13,9 @@ namespace Rentora.Application.Authentication.Commands.Register
             _identityService = identityService;
         }
 
-        public async Task<Result<RegisterResponse>> Handle(
-            RegisterCommand request,
-            CancellationToken cancellationToken)
+        public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken ct)
         {
-            return await _identityService.RegisterAsync(request, cancellationToken);
+            return await _identityService.RegisterAsync(request, ct);
         }
     }
 }

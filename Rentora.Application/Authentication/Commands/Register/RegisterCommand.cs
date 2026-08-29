@@ -11,10 +11,7 @@ namespace Rentora.Application.Authentication.Commands.Register
 
         public string Email { get; init; } = string.Empty;
 
-        public string PhoneNumber { get; init; } = string.Empty;
-
         public string Password { get; init; } = string.Empty;
 
-        public bool TermsAccepted { get; init; }
     }
 }

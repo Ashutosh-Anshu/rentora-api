@@ -16,6 +16,5 @@ namespace Rentora.Domain.Entities.Authentication
 
         public DateTime? UpdatedAt { get; set; }
 
-        public bool TermsAccepted { get; set; }
     }
 }

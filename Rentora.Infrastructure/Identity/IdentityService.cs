@@ -61,30 +61,13 @@ namespace Rentora.Infrastructure.Identity
                 }
             }
 
-            var usersWithPhone = await _userManager.Users
-                .Where(x => x.PhoneNumber == request.PhoneNumber)
-                .ToListAsync(ct);
-
-            foreach (var existingUser in usersWithPhone)
-            {
-                var existingRoles = await _userManager.GetRolesAsync(existingUser);
-
-                if (existingRoles.Contains(role.Name!))
-                {
-                    return Result<RegisterResponse>.Fail(
-                        $"Phone number is already registered as {role.Name}.");
-                }
-            }
-
             var user = new ApplicationUser
             {
                 Id = Guid.NewGuid(),
                 UserName = $"{request.Email}_{Guid.NewGuid():N}",
                 Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
                 FullName = request.FullName,
                 EmailConfirmed = true,
-                TermsAccepted = request.TermsAccepted,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -117,7 +100,6 @@ namespace Rentora.Infrastructure.Identity
                 RoleId = role.Id,
                 FullName = user.FullName,
                 Email = user.Email!,
-                PhoneNumber = user.PhoneNumber!
             };
 
             return Result<RegisterResponse>.Ok(

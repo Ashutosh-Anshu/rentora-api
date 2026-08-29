@@ -22,12 +22,6 @@ namespace Rentora.Application.Authentication.Commands.Register
                 .EmailAddress()
                 .WithMessage("Invalid email address.");
 
-            RuleFor(x => x.PhoneNumber)
-                .NotEmpty()
-                .WithMessage("Phone number is required.")
-                .Matches(@"^[6-9]\d{9}$")
-                .WithMessage("Invalid phone number.");
-
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .WithMessage("Password is required.")
@@ -42,9 +36,6 @@ namespace Rentora.Application.Authentication.Commands.Register
                 .Matches("[^a-zA-Z0-9]")
                 .WithMessage("Password must contain at least one special character.");
 
-            RuleFor(x => x.TermsAccepted)
-                .Equal(true)
-                .WithMessage("You must accept the terms and conditions.");
         }
     }
 }
